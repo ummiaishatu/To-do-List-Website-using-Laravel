@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\ToDoList;
+use App\Models\GroupToDoList;
 use Illuminate\Support\Carbon;
 
 class ToDoListController extends Controller
@@ -15,9 +16,24 @@ class ToDoListController extends Controller
      */
     public function index()
     {
-        $todos = ToDoList::OrderBy('created_at', 'Desc')->get();
-        return view('todo.todoapp')->with(['todos' => $todos]);
+        $todos = ToDoList::OrderBy('created_at', 'asc')->get();
+        $grouptodos = GroupToDoList::all();
+        return view('todo.todoapp')->with(['todos' => $todos, 'grouptodos' => $grouptodos]);
     }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function groupindex()
+    {
+        $todos = ToDoList::all();
+        $grouptodos = GroupToDoList::OrderBy('created_at', 'asc')->get();
+        return view('todo.grouptodo')->with(['grouptodos' => $grouptodos, 'todos' => $todos]);
+    }
+
+
 
     /**
      * Show the form for creating a new resource.
@@ -26,9 +42,19 @@ class ToDoListController extends Controller
      */
     public function create()
     {
-        return view('todo.createtodo');
+        $grouptodos = GroupToDoList::orderBy('groupname', 'asc')->get();
+        return view('todo.createtodo', ['grouptodos' => $grouptodos]);
     }
 
+    /**
+     * Show the form for creating a new group resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function creategroup()
+    {
+        return view('todo.creategrouptodo');
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -38,13 +64,16 @@ class ToDoListController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'todoname' => 'required|max:225'
-        ]);
         $todo = $request->todoname;
-        ToDoList::create(['todoname' => $todo]);
-
-        return redirect('/todo')->with('success', "TODO has been created!");
+        $grouptodo = $request->groupname;
+        $group_id = $request->group_id;
+        if ($todo){
+            ToDoList::create(['todoname' => $todo, 'group_id' => $group_id]);
+            return redirect('/todo')->with('success', "TODO has been created!");
+        }else{
+            GroupToDoList::create(['groupname' => $grouptodo]);
+            return redirect('/grouptodo')->with('success', "Group has been created!");
+        }
     }
 
     /**
@@ -53,9 +82,12 @@ class ToDoListController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function showgroup($id)
     {
-        //
+        //$grouptodos = GroupTodoList::findOrFail($id);
+        //$todo = TodoList::findOrFail($id);
+        //return view('todo.showgroup')->with(['id' => $id, 'todo' => $todo, 'grouptodos' => $grouptodos]);
+
     }
 
     /**
@@ -66,9 +98,25 @@ class ToDoListController extends Controller
      */
     public function edit($id)
     {
-        $todo = TodoList::find($id);
-        return view('todo.edittodo')->with(['id' => $id, 'todo' => $todo]);
+        $todo = TodoList::findOrFail($id);
+        $grouptodos = GroupToDoList::orderBy('groupname', 'asc')->get();
+        return view('todo.edittodo')->with(['id' => $id, 'todo' => $todo, 'grouptodos' => $grouptodos]);
     }
+
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function editgroup($id)
+    {
+        $grouptodo = GroupTodoList::findOrFail($id);
+        return view('todo.editgrouptodo')->with(['id' => $id, 'grouptodo' => $grouptodo]);
+    }
+
+    
 
     /**
      * Update the specified resource in storage.
@@ -78,14 +126,15 @@ class ToDoListController extends Controller
      */
     public function update(Request $request)
     {
-
-        $request->validate([
-            'todoname' => 'required|max:225'
-        ]);
-
         $updateTodo = TodoList::find($request->id);
-        $updateTodo->update(['todoname' => $request->todoname]);
-        return redirect('/todo')->with('success', "TODO updated!");
+        $updateGroupTodo = GroupTodoList::find($request->id);
+        if ($updateTodo){
+            $updateTodo->update(['todoname' => $request->todoname, 'group_id' => $request->group_id]);
+            return redirect('/todo')->with('success', "TODO updated!");
+        }else{
+            $updateGroupTodo->update(['groupname' => $request->groupname]);
+            return redirect('/grouptodo')->with('success', "Group updated!");
+        }
     }
 
     /**
@@ -96,13 +145,31 @@ class ToDoListController extends Controller
      */
     public function destroy($id)
     {
-        $todo = ToDoList::find( $id );
+        $todo = ToDoList::findOrFail( $id );
 
        if ($todo){
             $todo->delete();
             return redirect()->back()->with('success', "Todo has been deleted!");
         }else{
             return "Todo does not exist";
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroygroup($id)
+    {
+        $grouptodo = GroupToDoList::findOrFail( $id );
+
+       if ($grouptodo){
+            $grouptodo->delete();
+            return redirect('/grouptodo')->with('success', "Group has been deleted!");
+        }else{
+            return "Group does not exist";
         }
     }
 
@@ -113,13 +180,30 @@ class ToDoListController extends Controller
      */
     public function completed($id)
     {
-        $todo = TodoList::find($id);
+        $todo = TodoList::findOrFail($id);
         if ($todo->completed) {
             $todo->update(['completed' => false]);
             return redirect()->back()->with('success', "Todo marked as incomplete!");
         }else {
             $todo->update(['completed' => true]);
             return redirect()->back()->with('success', "Todo marked as complete!");
+        }
+    }
+
+    /**
+     * Show that the specified resource from storage is completed successfully.
+     *
+     * @param  int  $id
+     */
+    public function completedgroup($id)
+    {
+        $grouptodo = GroupTodoList::findOrFail($id);
+        if ($grouptodo->completed) {
+            $grouptodo->update(['completed' => false]);
+            return redirect('/grouptodo')->with('success', "Group marked not completed!");
+        }else {
+            $grouptodo->update(['completed' => true]);
+            return redirect('/grouptodo')->with('success', "Group marked as complete!");
         }
     }
 }

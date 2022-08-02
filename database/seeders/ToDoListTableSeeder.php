@@ -15,6 +15,14 @@ class ToDoListTableSeeder extends Seeder
      */
     public function run()
     {
+
+        //$t = new ToDoList;
+        //$t->todoname = 'make breakfast';
+        //$t->completed = 0;
+        //$t->group_id = 1;
+        //$t->save();
+
+
         $toDoList = TodoList::factory()->count(5)->create();
 
     }

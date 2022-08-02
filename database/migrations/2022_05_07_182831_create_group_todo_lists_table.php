@@ -13,14 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('to_do_lists', function (Blueprint $table) {
+        Schema::create('group_todo_lists', function (Blueprint $table) {
             $table->id();
-            $table->string('todoname');
-            $table->bigInteger('group_id')->unsigned();
-
-            $table->foreign('group_id')->references('id')->on('group_todo_lists')
-                ->onDelete('cascade')->onUpdate('cascade');
-
+            $table->string('groupname');
             $table->boolean('completed')->default(false);
             $table->timestamps();
         });
@@ -33,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('to_do_lists');
+        Schema::dropIfExists('group_todo_lists');
     }
 };

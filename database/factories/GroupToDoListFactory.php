@@ -2,13 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\ToDoList;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ToDoList>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\GroupToDoList>
  */
-class ToDoListFactory extends Factory
+class GroupToDoListFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -18,8 +17,7 @@ class ToDoListFactory extends Factory
     public function definition()
     {
         return [
-            'todoname' => $this->faker->unique()->sentence(),
-            'group_id' => \App\Models\GroupToDoList::factory(),
+            'groupname' => $this->faker->unique()->word(),
         ];
     }
 }

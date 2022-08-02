@@ -16,6 +16,15 @@
             <div class="col-12">
                 @csrf
                 <input type="text" class="form-control" name="todoname" placeholder="ADD Task">
+                <label for="select">Select Group</label>
+                <select name="group_id" id="select" class="form-select mt-5">
+                    <option value="">Groups</option>
+                    @foreach($grouptodos as $grouptodo)            
+                        <option value="{{ $grouptodo->id }}" {{($grouptodo->id == old('group_id')) ? 'selected' : '' }} > 
+                            {{$grouptodo->groupname}}
+                        </option>
+                    @endforeach    
+                </select>
             </div>
             <div class="col-12 m-2">
                 <button type="submit" class="btn btn-success btn-lg" value="Create">Create</button>

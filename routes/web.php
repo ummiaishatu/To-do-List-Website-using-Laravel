@@ -21,17 +21,29 @@ Route::get('/', function () {
 
 Route::get('/todo', [ToDoListController::class, 'index']);
 
+Route::get('/grouptodo', [ToDoListController::class, 'groupindex']);
+
 Route::get('/create', [ToDoListController::class, 'create']);
+
+Route::get('/creategrouptodo', [ToDoListController::class, 'creategroup']);
 
 Route::post('/store', [ToDoListController::class, 'store']);
 
 Route::get('/{id}/edit', [ToDoListController::class, 'edit']);
 
+Route::get('/{id}/editgroup', [ToDoListController::class, 'editgroup']);
+
 Route::patch('/update', [ToDoListController::class, 'update']);
 
 Route::get('/{id}/completed', [ToDoListController::class, 'completed']);
 
+Route::get('/{id}/completedgroup', [ToDoListController::class, 'completedgroup']);
+
 Route::get('/{id}/delete', [ToDoListController::class, 'destroy']);
+
+Route::get('/{id}/deletegroup', [ToDoListController::class, 'destroygroup']);
+
+//Route::get('/{id}/showgroup', [ToDoListController::class, 'showgroup']);
 
 
 Route::get('/dashboard', function () {

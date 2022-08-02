@@ -5,20 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ToDoList extends Model
+class GroupTodoList extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'todoname',
-        'group_id',
+        'groupname',
         'completed'
     ];
 
-    public function GroupTodoList()
+    public function todos()
     {
-        return $this->belongsTo(GroupTodoList::class, 'group_id');
+        return $this->hasMany(TodoList::class);
 
     }
-
-    
 }
