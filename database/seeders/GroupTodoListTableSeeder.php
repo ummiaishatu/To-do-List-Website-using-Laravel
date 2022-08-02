@@ -15,10 +15,10 @@ class GroupTodoListTableSeeder extends Seeder
      */
     public function run()
     {
-        //$e = new GroupTodoList;
-        //$e->groupname = 'none';
-        //$e->completed = 0;
-        //$e->save();
+        $e = new GroupTodoList;
+        $e->groupname = 'none';
+        $e->completed = 0;
+        $e->save();
 
         //$grouptoDoList = GroupTodoList::factory()->create();
     }
